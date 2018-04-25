@@ -15,7 +15,7 @@ function buildChart(containerId) {
 
   var innerWidth = width - margin.left - margin.right;
   var innerHeight = height - margin.top - margin.bottom;
-  var colors = d3.schemeCategory10;
+  var colors = d3.schemeCategory20;
 
   var svg = d3
     .select(containerId)
@@ -68,7 +68,7 @@ function buildChart(containerId) {
       })
       .attr('height', 5)
       .attr('fill', (d, i) => {
-        return colors[Math.floor(i / 10) % 10];
+        return colors[Math.floor(i / 10)];
       });
 
     g
