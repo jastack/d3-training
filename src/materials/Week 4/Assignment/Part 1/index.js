@@ -40,29 +40,52 @@ function buildChart(containerId) {
       d.year = +d.year;
     });
 
+    // sclea
     var xScale = d3
       .scaleLinear()
       .domain(d3.extent(data, d => d.temp))
       .range([0, innerWidth]);
 
-    var xAxis = d3.axisBottom(xScale);
+    var yScale = d3
+      .scaleBand()
+      .domain(
+        data.map(d => {
+          return d.year;
+        })
+      )
+      .range([0, innerHeight])
+      .padding(0.2);
 
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale).tickValues(data.filter(d => {
+      return d.year % 10 === 0;
+    }).map(d => d.year));
+
+    // x-axis
     g
       .append('g')
       .attr('class', 'x-axis')
       .attr('transform', `translate(0, ${innerHeight})`)
       .call(xAxis);
 
-    g
-      .selectAll('.bar')
+      // y-axis
+      g
+      .append('g')
+      .attr('class', 'y-axis')
+      .call(yAxis.ticks(5));
+
+    // bars
+    var bar = g
+      .selectAll('.g')
       .data(data)
       .enter()
+      .append('g')
+      .attr('transform', (d, i) => {
+        return `translate(0, ${i * (barWidth + spaceBetween)})`;
+      });
+
+    bar
       .append('rect')
-      .attr('class', 'bar')
-      .attr('x', 0)
-      .attr('y', (d, i) => {
-        return (barWidth + spaceBetween) * i;
-      })
       .attr('width', d => {
         return xScale(d.temp);
       })
@@ -71,6 +94,7 @@ function buildChart(containerId) {
         return colors[Math.floor(i / 10)];
       });
 
+    // x-axis label
     g
       .append('text')
       .attr('class', 'x-axis-label')
@@ -80,6 +104,7 @@ function buildChart(containerId) {
       .attr('dominant-baseline', 'hanging')
       .text('Temperature');
 
+    // title
     g
       .append('text')
       .attr('class', 'title')
@@ -88,7 +113,8 @@ function buildChart(containerId) {
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'baseline')
       .style('font-size', 24)
-      .text('Average global temperatures by year')
+      .text('Average global temperatures by year');
+
   });
 }
 
